@@ -1,7 +1,9 @@
 package com.example.task_manager.controller;
 
+import com.example.task_manager.dto.AuthRequest;
 import com.example.task_manager.entity.User;
 import com.example.task_manager.service.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +24,8 @@ public class AuthController {
 
     /** POST /api/auth/register — creates a new user account. */
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody Map<String, String> body) {
-        User user = authService.register(body.get("username"), body.get("password"));
+    public ResponseEntity<String> register(@Valid @RequestBody AuthRequest request) {
+        User user = authService.register(request.getUsername(), request.getPassword());
         if (user == null) {
             return ResponseEntity.status(409).body("Username already taken");
         }
@@ -32,8 +34,8 @@ public class AuthController {
 
     /** POST /api/auth/login — authenticates a user and returns a JWT. */
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> body) {
-        String token = authService.login(body.get("username"), body.get("password"));
+    public ResponseEntity<Map<String, String>> login(@Valid @RequestBody AuthRequest request) {
+        String token = authService.login(request.getUsername(), request.getPassword());
         if (token == null) {
             return ResponseEntity.status(401).body(Map.of("error", "Invalid username or password"));
         }

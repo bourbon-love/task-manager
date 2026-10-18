@@ -3,8 +3,10 @@ package com.example.task_manager.controller;
 import com.example.task_manager.dto.TaskRequest;
 import com.example.task_manager.dto.TaskResponse;
 import com.example.task_manager.service.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,7 +34,7 @@ public class TaskController {
     /** POST /api/tasks — creates a new task for the current user. */
     @PostMapping
     public ResponseEntity<TaskResponse> createTask(
-            @RequestBody TaskRequest request,
+            @Validated(TaskRequest.OnCreate.class) @RequestBody TaskRequest request,
             @AuthenticationPrincipal String username) {
         TaskResponse created = taskService.createTask(request, username);
         return ResponseEntity.status(201).body(created);
@@ -42,7 +44,7 @@ public class TaskController {
     @PutMapping("/{id}")
     public TaskResponse updateTask(
             @PathVariable Long id,
-            @RequestBody TaskRequest request,
+            @Valid @RequestBody TaskRequest request,
             @AuthenticationPrincipal String username) {
         return taskService.updateTask(id, request, username);
     }
